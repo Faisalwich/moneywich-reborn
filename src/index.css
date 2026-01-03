@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+.ql-editor {
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word;
+}
+
+.ql-container {
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+/* PAKSA TEKS TURUN KE BAWAH (Word Wrap) */
+/* Ini akan memperbaiki masalah tulisan bablas ke samping di Card maupun Halaman Detail */
+p,
+span,
+div,
+article {
+  overflow-wrap: break-word !important; /* Standar modern */
+  word-wrap: break-word !important; /* Dukungan lama */
+  word-break: break-word !important; /* Paksa potong meskipun itu satu kata panjang */
+  white-space: normal !important; /* Hapus paksaan satu baris */
+}
