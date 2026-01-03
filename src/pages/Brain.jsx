@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom"; // Import Link
+import { Link, useNavigate } from "react-router-dom"; // ✅ SUDAH DIPERBAIKI: Ada useNavigate
 import { Search, Loader2, Hash, Calendar, Copy, Check, X, Maximize2, ArrowRight, PlusCircle } from "lucide-react";
 
 // --- KOMPONEN KECIL: CODE SNIPPET (Statis) ---
@@ -44,8 +44,17 @@ export default function Brain() {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
 
+  // ✅ SUDAH DIPERBAIKI: Definisi Session & Navigate
+  const [session, setSession] = useState(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchPosts();
+
+    // ✅ SUDAH DIPERBAIKI: Cek status login
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
   }, []);
 
   const fetchPosts = async () => {
@@ -64,14 +73,14 @@ export default function Brain() {
     });
   };
 
-  // Helper untuk membuang tag HTML biar preview-nya rapi
+  // Helper untuk membuang tag HTML biar preview-nya rapi (hanya teks)
   const stripHtml = (html) => {
     let doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
   };
 
   const truncateText = (text, limit) => {
-    const cleanText = stripHtml(text); // Bersihkan HTML dulu
+    const cleanText = stripHtml(text);
     if (cleanText.length <= limit) return cleanText;
     return cleanText.substring(0, limit) + "...";
   };
@@ -101,7 +110,7 @@ export default function Brain() {
               </div>
             ) : (
               <div className="space-y-6">
-                {posts.map((post, index) => (
+                {posts.map((post) => (
                   <motion.div
                     key={post.id}
                     layoutId={`card-${post.id}`}
@@ -112,6 +121,7 @@ export default function Brain() {
                       <h4 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition">{post.title}</h4>
                       <span className="text-xs text-slate-500 font-mono">{formatDate(post.created_at)}</span>
                     </div>
+                    {/* Preview text bersih tanpa HTML tag */}
                     <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">{truncateText(post.content, 150)}</p>
 
                     <div className="flex justify-between items-center">
@@ -196,13 +206,18 @@ export default function Brain() {
                   </div>
                 )}
 
-                <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{selectedPost.content}</div>
+                {/* ✅ SUDAH DIPERBAIKI: Menggunakan dangerouslySetInnerHTML agar HTML render rapi */}
+                <div
+                  className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed break-words whitespace-normal"
+                  dangerouslySetInnerHTML={{ __html: selectedPost.content }}
+                />
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
+      {/* ✅ SUDAH DIPERBAIKI: Tombol hanya muncul jika ada Session (Login) */}
       {session && (
         <button
           onClick={() => navigate("/editor")}
