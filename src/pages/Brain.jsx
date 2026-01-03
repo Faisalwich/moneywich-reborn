@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom"; // Import Link
-import { Loader2, Hash, Calendar, Copy, Check, X, Maximize2 } from "lucide-react";
+import { Search, Loader2, Hash, Calendar, Copy, Check, X, Maximize2, ArrowRight, PlusCircle } from "lucide-react";
 
 // --- KOMPONEN KECIL: CODE SNIPPET (Statis) ---
 const SnippetCard = ({ title, lang, code }) => {
@@ -202,6 +202,17 @@ export default function Brain() {
           </div>
         )}
       </AnimatePresence>
+
+      {session && (
+        <button
+          onClick={() => navigate("/editor")}
+          className="fixed bottom-8 right-8 bg-primary text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-purple-700 transition-all duration-300 z-50 flex items-center gap-2 font-bold group"
+          title="Tulis Jurnal Baru"
+        >
+          <PlusCircle size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+          <span className="hidden md:inline">Tulis Baru</span>
+        </button>
+      )}
     </div>
   );
 }
